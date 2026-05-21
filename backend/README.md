@@ -1,3 +1,76 @@
+**Project: Quiz Platform — Backend**
+
+This directory contains the backend service for the Quiz Platform: a NestJS application using Prisma (Postgres) as the ORM. It exposes HTTP APIs for creating and running quizzes, managing achievements, and storing user attempts.
+
+**Tech Stack**
+- NestJS (TypeScript)
+- Prisma (PostgreSQL)
+- Redis (optional cache/session)
+- pnpm for package management
+- Docker / docker-compose for local deployment
+
+**Quick Start (Docker)**
+1. From repository root:
+```bash
+cd main
+docker compose up -d --build
+```
+2. Backend will be available at `http://localhost:3001` (see `docker-compose.yml`).
+
+**Local Development (without Docker)**
+1. Install dependencies:
+```bash
+pnpm install
+```
+2. Configure environment variables. Copy `.env.example` (not included) and fill values:
+- `DATABASE_URL` — PostgreSQL connection string
+- `REDIS_URL` — Redis connection string (optional)
+- `JWT_SECRET` — authentication secret
+- `GEMINI_API_KEY` — optional, for AI features
+3. Run database migrations and generate Prisma client:
+```bash
+pnpm --dir backend prisma generate
+pnpm --dir backend prisma migrate deploy
+```
+4. Start dev server:
+```bash
+pnpm --dir backend start:dev
+```
+
+**Production build**
+```bash
+pnpm --dir backend build
+pnpm --dir backend start:prod
+```
+
+**Database**
+- Prisma schema is in `prisma/schema.prisma`.
+- Migrations are in `prisma/migrations/`.
+- Seed scripts should be added to `prisma/seed` if needed.
+
+**Key Endpoints (examples)**
+- `POST /quiz` — create quiz (CREATOR role required)
+- `GET /quiz` — list quizzes
+- `GET /quiz/:id` — get quiz for play (protected)
+- `POST /quiz/:id/submit` — submit answers
+- `POST /quiz/:id/achievements` — create achievement (CREATOR)
+- `GET /quiz/achievements/my` — get my achievements
+
+**Notes & Troubleshooting**
+- Ensure `DATABASE_URL` is set before running `prisma migrate deploy` — otherwise deploy will fail.
+- If `start:prod` fails with missing `dist/main`, run `pnpm --dir backend build` first; Nest output path is `dist/src/main.js` by default — `package.json` must reference the correct path.
+- For Docker issues, check `docker compose logs backend` and ensure migrations ran successfully.
+
+**Testing & CI**
+- Add unit tests with NestJS testing utilities and integration tests with a test database or Testcontainers.
+- CI should run: `pnpm install`, `pnpm --dir backend prisma generate`, `pnpm --dir backend build`, `pnpm --dir frontend build`, and run tests.
+
+**Contributing**
+- Follow the repo coding standards (TSLint/ESLint + Prettier).
+- Use feature branches and open PRs with descriptions and linked issues.
+
+---
+Generated README for backend. Update environment examples and CI instructions as needed.
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
