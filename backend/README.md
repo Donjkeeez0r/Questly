@@ -15,7 +15,7 @@ This directory contains the backend service for the Quiz Platform: a NestJS appl
 cd main
 docker compose up -d --build
 ```
-2. Backend will be available at `http://localhost:3001` (see `docker-compose.yml`).
+2. Backend will be available at `http://localhost:3002` when running through Docker compose; local `start:dev` still uses `http://localhost:3001`.
 
 **Local Development (without Docker)**
 1. Install dependencies:

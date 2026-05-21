@@ -19,7 +19,7 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-dummy_key}
     command: sh -c "pnpm prisma migrate deploy && pnpm start:prod"
     ports:
-      - "3001:3001"
+      - "3002:3001"
 
   frontend:
     image: main-frontend

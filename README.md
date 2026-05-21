@@ -18,7 +18,7 @@ cd main
 docker compose up -d --build
 ```
 2. Services started:
-- Backend: `http://localhost:3001`
+- Backend container: `http://localhost:3002`
 - Frontend: check `docker-compose.yml` for port (commonly `http://localhost:8080`)
 - Postgres and Redis run as containers for persistence and caching.
 
@@ -34,6 +34,7 @@ pnpm --dir backend prisma generate
 pnpm --dir backend prisma migrate dev
 pnpm --dir backend start:dev
 ```
+- Local backend dev still listens on `http://localhost:3001`.
 - Frontend dev:
 ```bash
 pnpm --dir frontend install
