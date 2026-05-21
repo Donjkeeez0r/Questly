@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  CREATOR
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model User {
+  id                  String        @id @default(uuid())
+  email               String        @unique
+  password            String
+  role                Role          @default(USER)
+  createdAt           DateTime      @default(now())
+  
+  achievements        UserAchievement[]
+  attempts            QuizAttempt[]
+  createdQuizzes      Quiz[]   
+}
+
+model Quiz {
+  id                String          @id @default(uuid())
+  title             String
+  description       String?
+  difficulty        Difficulty      @default(EASY)
+  timeLimit         Int?
+  creatorId         String
+  createdAt         DateTime        @default(now())
+
+  achievements      Achievement[]
+  attempts          QuizAttempt[]
+  questions         Question[]
+  creator           User            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id            String              @id @default(uuid())
+  text          String
+  quizId        String
+  createdAt     DateTime            @default(now())
+  hint          String?
+
+  userAnswers   UserAnswer[]
+  options       AnswerOption[]
+  quiz          Quiz                @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model AnswerOption {
+  id            String              @id @default(uuid())
+  text          String
+  isCorrect     Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  questionId    String
+
+  selectedIn    UserAnswer[]        
+  question      Question            @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id          String                @id @default(uuid())
+  score       Int
+  userId      String
+  quizId      String
+  createdAt   DateTime              @default(now())
+
+  answers     UserAnswer[]
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz                  @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model UserAnswer {
+  id                  String                  @id @default(uuid())
+  isCorrect           Boolean
+  questionId          String
+  selectedOptionId    String?
+  attemptId           String
+  createdAt           DateTime                @default(now())
+
+  selectedOption      AnswerOption?           @relation(fields: [selectedOptionId], references: [id])
+  attempt             QuizAttempt             @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question            Question                @relation(fields: [questionId], references: [id])
+}
+
+model Achievement {
+  id              String              @id @default(uuid())
+  name            String
+  description     String
+  Icon            String?
+  scoreRequired   Int
+  quizId          String
+
+  users           UserAchievement[]
+  quiz            Quiz                @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@unique([name, quizId])
+}
+
+model UserAchievement {
+  id                String        @id @default(uuid())
+  userId            String
+  achievementId     String
+  createdAt         DateTime      @default(now())
+
+  achievement       Achievement   @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}

@@ -1,0 +1,51 @@
+services:
+  backend:
+    image: main-backend
+    restart: always
+    depends_on:
+      - db
+      - redis
+    environment:
+      PORT: 3001
+      FRONTEND_URL: http://localhost:8080
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgresql}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: ${DB_NAME:-main_db}
+      DATABASE_URL: postgresql://${DB_USER:-postgresql}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-main_db}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-supersecret}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-dummy_key}
+    command: sh -c "pnpm prisma migrate deploy && pnpm start:prod"
+    ports:
+      - "3001:3001"
+
+  frontend:
+    image: main-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgresql}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-main_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
