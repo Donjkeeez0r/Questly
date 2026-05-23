@@ -1,13 +1,17 @@
 services:
   backend:
-    image: main-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     restart: always
     depends_on:
       - db
       - redis
+    env_file:
+      - ./backend/.env
     environment:
-      PORT: 3001
-      FRONTEND_URL: http://localhost:8080
+      PORT: 3000
+      FRONTEND_URL: http://frontend:80
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: ${DB_USER:-postgresql}
@@ -17,17 +21,18 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-supersecret}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-dummy_key}
-    command: sh -c "pnpm prisma migrate deploy && pnpm start:prod"
     ports:
-      - "3002:3001"
+      - "3000:3000"
 
   frontend:
-    image: main-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     restart: always
     depends_on:
       - backend
     ports:
-      - "8080:80"
+      - "80:80"
 
   db:
     image: postgres:16-alpine

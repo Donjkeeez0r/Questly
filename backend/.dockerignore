@@ -1,0 +1,12 @@
+node_modules
+dist
+test
+
+nest-cli.json
+pnpm-lock.yaml
+README.md
+.prettierrc
+.gitignore
+.env
+eslint.config.mjs
+Dockerfile
