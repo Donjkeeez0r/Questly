@@ -14,12 +14,12 @@ Overview
 Quick Start (Docker)
 1. From repository root:
 ```bash
-cd main
 docker compose up -d --build
 ```
-2. Services started:
-- Backend container: `http://localhost:3002`
-- Frontend: check `docker-compose.yml` for port (commonly `http://localhost:8080`)
+2. Docker Compose uses the service-specific Dockerfiles in `backend/Dockerfile` and `frontend/Dockerfile`.
+3. Services started:
+- Backend container: `http://localhost:3000`
+- Frontend: `http://localhost/`
 - Postgres and Redis run as containers for persistence and caching.
 
 Local Development (recommended)
@@ -53,11 +53,12 @@ Database & Migrations
 - Run `pnpm --dir backend prisma migrate deploy` in CI or production to apply migrations.
 
 Building & Production
-- Build backend and frontend, then run with a process manager or Dockerized images.
+- Build backend and frontend locally, or use the Dockerfiles in each service directory to build container images.
 ```bash
 pnpm --dir backend build
 pnpm --dir frontend build
 ```
+- For containerized runs, use `docker compose up -d --build` from the repository root.
 
 Testing & CI recommendations
 - Add unit tests (Jest/Vitest) for frontend and backend services.
